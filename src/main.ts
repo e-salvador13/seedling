@@ -5,6 +5,7 @@ import { SPECIES, speciesById, type Species } from './species'
 import { seedSvg } from './seeds'
 import { randomSeed } from './rng'
 import { initExplainer } from './explainer'
+import { initLab } from './lab'
 
 const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
 
@@ -22,6 +23,7 @@ let speed = 8
 let showMotes = true
 let showRoots = false
 let dropping = false
+let neuralFlower: { canvas: HTMLCanvasElement; species: string } | null = null
 
 const scrub = $<HTMLInputElement>('scrub')
 const dayEl = $('day')
@@ -59,6 +61,7 @@ function plant(sp: Species, s: number, animate = true): void {
   tree.update(0, 0, 1, showRoots)
   scene.frame(tree.focusHeight(), tree.top)
   scene.snap()
+  if (neuralFlower && neuralFlower.species === sp.id) tree.setNeuralFlower(neuralFlower.canvas)
   if (animate) {
     dropping = true
     dropEl.innerHTML = seedSvg(sp)
@@ -181,4 +184,14 @@ function frame(now: number): void {
 plant(species, seed, true)
 ;(window as any).seedling = { get tree() { return tree }, get day() { return day }, get life() { return life }, scene }
 initExplainer()
+initLab((canvas, sp) => {
+  neuralFlower = { canvas, species: sp.id }
+  if (sp.id !== species.id) plant(sp, randomSeed())
+  else tree?.setNeuralFlower(canvas)
+  if (tree && life) {
+    const b = species.bloom
+    if (b && (day < b.start || day > b.end + 10)) { day = b.start + 8; scrub.value = String(day) }
+  }
+  document.getElementById('hero')!.scrollIntoView({ behavior: 'smooth' })
+}, species).then((lab) => { ;(window as any).seedling.lab = lab }).catch((e) => { console.error(e); document.getElementById('lab-status')!.textContent = 'This browser cannot run the neural lab (WebGL needed).' })
 requestAnimationFrame(frame)

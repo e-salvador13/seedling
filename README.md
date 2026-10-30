@@ -30,7 +30,20 @@ Opens on http://localhost:5195. `pnpm build` produces a static site in `dist/` t
 - `src/scene.ts` – lights, ground, camera framing
 - `src/explainer.ts` – the three 2D diagrams on the page
 - `src/main.ts` – shelf, timeline, share links
+- `src/nca.ts` – the neural cellular automaton (model, training, targets)
+- `src/lab.ts` – the neural blossom lab UI
 
-## Next
+## Neural blossoms
 
-Neural blossoms: replace the drawn flowers with neural cellular automata that learn to grow each species' flower from a single cell and regrow when damaged.
+The page ends with a lab where each species' flower is grown by a neural cellular automaton (after Mordvintsev et al., *Growing Neural Cellular Automata*, 2020). Every cell on a 32 × 32 grid holds 16 numbers, looks at its 3 × 3 neighbourhood through identity and Sobel filters, runs the same two-layer network, and nudges its own state; half the cells update each step. The network is trained by gradient descent through 40 to 64 unrolled steps, with a sample pool and random wounds so it learns to regenerate.
+
+- Training runs in the browser with TensorFlow.js (WebGL). About 4 steps a second on an Apple laptop; a recognisable flower takes a few hundred steps.
+- Shipped weights in `public/weights/*.json` were trained in the same lab and load by default, so visitors see a grown flower at once and can still train from scratch.
+- Click the growing flower to wound it and watch it heal. The twelve hidden channels are shown alongside.
+- "Hang it on the tree" swaps the tree's built petals for the grown flower.
+
+Dev only: the Vite server accepts `POST /__weights/<species>` and writes the JSON into `public/weights`, which is how the shipped weights were produced.
+
+## Live
+
+https://seedling-95h.pages.dev (Cloudflare Pages, `wrangler pages deploy dist --project-name seedling`).

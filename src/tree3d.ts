@@ -59,6 +59,7 @@ export class Tree3D {
   private centers: THREE.InstancedMesh | null = null
   private buds: THREE.InstancedMesh | null = null
   private panicles: THREE.InstancedMesh | null = null
+  private neural: THREE.InstancedMesh | null = null
   private fruit: THREE.InstancedMesh | null = null
   private stalks: THREE.InstancedMesh | null = null
   private calyx: THREE.InstancedMesh | null = null
@@ -180,6 +181,11 @@ export class Tree3D {
     })
     this.motes = new THREE.Points(mg, moteMat)
 
+    const neuralMat = new THREE.MeshStandardMaterial({ alphaTest: 0.35, side: THREE.DoubleSide, roughness: 0.6, color: '#ffffff', emissive: '#ffffff', emissiveIntensity: 0.15, transparent: false })
+    this.neural = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1), neuralMat, 9000)
+    this.neural.instanceMatrix.setUsage(THREE.DynamicDrawUsage)
+    this.neural.visible = false
+    this.group.add(this.neural)
     this.group.add(this.branches, this.joints, this.roots, this.flare, this.leaves, this.seedMesh, this.motes)
     for (const m of [this.petals, this.centers, this.buds, this.panicles, this.fruit, this.stalks, this.calyx]) if (m) this.group.add(m)
     // Instances are placed every frame, so never let three.js cull on a stale bounding sphere.
@@ -195,6 +201,24 @@ export class Tree3D {
     }
     this.motes.geometry.dispose()
     ;(this.motes.material as THREE.Material).dispose()
+  }
+
+  /** Swap the built petals for a flower grown by the neural cellular automaton. */
+  setNeuralFlower(canvas: HTMLCanvasElement | null): void {
+    if (!this.neural) return
+    const mat = this.neural.material as THREE.MeshStandardMaterial
+    mat.map?.dispose()
+    if (!canvas) {
+      mat.map = null
+      this.neural.visible = false
+      mat.needsUpdate = true
+      return
+    }
+    const tex = new THREE.CanvasTexture(canvas)
+    tex.colorSpace = THREE.SRGBColorSpace
+    mat.map = tex
+    mat.needsUpdate = true
+    this.neural.visible = true
   }
 
   focusHeight(): number {
@@ -289,7 +313,7 @@ export class Tree3D {
   update(day: number, t: number, wind: number, showRoots: boolean): void {
     const { nodes, species: sp } = this.life
     subtreeSizes(nodes, day, this.sizes)
-    let bi = 0, ji = 0, li = 0, pi = 0, ci = 0, ui = 0, ni = 0, ri = 0
+    let bi = 0, ji = 0, li = 0, pi = 0, ci = 0, ui = 0, ni = 0, ri = 0, ni2 = 0
     const sway = Math.sin(t * 0.9) * 0.012 * wind + Math.sin(t * 2.3) * 0.004 * wind
     this.group.rotation.z = sway
     this.group.rotation.x = Math.cos(t * 0.7) * 0.006 * wind
@@ -427,6 +451,16 @@ export class Tree3D {
               _m.compose(_pos, _qF, _s)
               this.buds.setMatrixAt(ui++, _m)
             }
+            if (this.neural && this.neural.visible) {
+              if (ni2 >= 9000) continue
+              _qK.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI / 2)
+              _q.copy(_qF).multiply(_qK)
+              const ns = B.length * 2.4 * sc
+              _s.set(ns, ns, ns)
+              _m.compose(_pos, _q, _s)
+              this.neural.setMatrixAt(ni2++, _m)
+              continue
+            }
             const n9 = B.petals
             if (pi + n9 > MAX_PETALS) continue
             for (let k = 0; k < n9; k++) {
@@ -561,6 +595,10 @@ export class Tree3D {
       this.petals.instanceColor!.needsUpdate = true
       this.centers.instanceMatrix.needsUpdate = true
       this.buds.instanceMatrix.needsUpdate = true
+    }
+    if (this.neural) {
+      this.neural.count = ni2
+      this.neural.instanceMatrix.needsUpdate = true
     }
     if (this.panicles) {
       this.panicles.count = ni

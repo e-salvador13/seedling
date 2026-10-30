@@ -88,14 +88,43 @@
       <div class="cards" id="cards"></div>
     </section>
 
-    <section class="essay next">
-      <p class="eyebrow">Next</p>
-      <h2>Flowers that grow themselves</h2>
-      <p>The blossoms here are drawn. The next step is to grow them: each flower becomes a tiny neural network that learns to build itself from a single cell, petal by petal, and regrows if you tear one off. That turns the shelf into a nursery of learned forms rather than painted ones.</p>
+    <section class="essay lab" id="lab">
+      <p class="eyebrow">Neural blossoms</p>
+      <h2>A flower that grows itself</h2>
+      <p>Every blossom on the shelf can also be grown by a neural cellular automaton: a grid of cells where each cell runs the same tiny neural network, sees only its eight neighbours, and decides how to change. Nobody draws the flower. The network is trained by gradient descent until a single seed cell unfolds into the species' bloom, and because no cell ever sees the whole picture, the flower also heals when you tear a piece out. Train it here and watch it learn, or start from weights we trained, then hang the grown flower on the tree.</p>
+      <div class="shelf lab-shelf" id="lab-species" role="group" aria-label="Choose a flower to grow"></div>
+      <div class="lab-grid">
+        <figure class="lab-cell">
+          <canvas id="lab-target" width="32" height="32" class="pixel"></canvas>
+          <figcaption>Target, 32 × 32</figcaption>
+        </figure>
+        <figure class="lab-cell lab-main">
+          <canvas id="lab-grow" width="32" height="32" class="pixel" title="Click to wound"></canvas>
+          <figcaption><span id="lab-step">step 0</span> · click the flower to wound it</figcaption>
+          <div class="lab-buttons">
+            <button class="ghost dark" id="lab-regrow">Grow from seed</button>
+            <button class="ghost dark" id="lab-pause">Pause</button>
+            <button class="ghost dark" id="lab-speed">Faster</button>
+            <button class="ghost dark" id="lab-wound">Wound</button>
+            <button class="ghost dark" id="lab-hang">Hang it on the tree</button>
+          </div>
+        </figure>
+        <figure class="lab-cell">
+          <canvas id="lab-hidden" width="128" height="96" class="pixel"></canvas>
+          <figcaption>The twelve hidden channels</figcaption>
+          <canvas id="lab-loss" width="256" height="80"></canvas>
+          <figcaption>Training loss</figcaption>
+          <div class="lab-buttons">
+            <button class="ghost dark" id="lab-train">Train</button>
+            <button class="ghost dark" id="lab-reset">Reset network</button>
+          </div>
+          <p class="lab-status" id="lab-status">loading</p>
+        </figure>
+      </div>
     </section>
 
     <footer>
-      <p>Seedling · a growth simulation built with three.js. Branches and roots by space colonization, thickness by the pipe model, seasons by the calendar.</p>
+      <p>Seedling · a growth simulation built with three.js. Branches and roots by space colonization, thickness by the pipe model, seasons by the calendar, blossoms by neural cellular automata.</p>
     </footer>
   </main>
   <script type="module" src="/src/main.ts"></script>
