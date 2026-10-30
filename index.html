@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Seedling</title>
+  <meta name="description" content="Plant a seed and watch it grow. A time-lapse simulation where every tree is different." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400;1,500&family=Karla:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/src/style.css" />
+</head>
+<body>
+  <main>
+    <section class="hero" id="hero">
+      <canvas id="view" aria-label="Growing plant"></canvas>
+      <div class="drop" id="drop" aria-hidden="true"></div>
+
+      <header class="brand">
+        <h1>Seedling</h1>
+        <p class="latin" id="latin">Magnolia × soulangeana</p>
+      </header>
+
+      <div class="tools">
+        <button class="ghost" id="motes" aria-pressed="true">Hide the light</button>
+        <button class="ghost" id="roots" aria-pressed="false">Show roots</button>
+        <button class="ghost" id="reroll">New seed</button>
+        <button class="ghost" id="share">Copy link</button>
+      </div>
+
+      <div class="shelf" id="shelf" role="group" aria-label="Choose a seed"></div>
+
+      <div class="timeline">
+        <button class="play" id="play" aria-label="Pause"><span class="ico-pause"></span></button>
+        <input type="range" id="scrub" min="0" max="320" step="0.5" value="0" aria-label="Day" />
+        <div class="speeds" role="group" aria-label="Speed">
+          <button data-speed="8" class="on">1×</button>
+          <button data-speed="24">3×</button>
+          <button data-speed="80">10×</button>
+        </div>
+      </div>
+
+      <div class="stamp" aria-live="polite">
+        <span id="day">DAY 000</span>
+        <span id="phase">germinating</span>
+      </div>
+
+      <a class="down" href="#how" aria-label="How it works">how it grows ↓</a>
+    </section>
+
+    <section class="essay" id="how">
+      <p class="eyebrow">How it grows</p>
+      <h2>The crown exists before the tree does</h2>
+      <p>Every seed on the shelf carries the shape of its grown crown as a cloud of light. Each day, every point of light pulls on the nearest branch tip, and that tip grows one step toward the average pull. When a branch comes close enough, the light is spent. Nothing tells a branch where to go. The shape is decided by where the light is.</p>
+      <figure>
+        <canvas id="fig-light" width="960" height="460"></canvas>
+        <figcaption>
+          <label for="fig-light-day">Day</label>
+          <input type="range" id="fig-light-day" min="0" max="140" value="0" step="1" />
+          <output id="fig-light-out">0</output>
+        </figcaption>
+      </figure>
+    </section>
+
+    <section class="essay">
+      <p class="eyebrow">Thickness</p>
+      <h2>A branch is as thick as what it feeds</h2>
+      <p>There is no rule for a trunk. Each branch is drawn as thick as the number of twigs above it, so the trunk is simply the branch that feeds everything. Botanists call this the pipe model: the cross-section below a fork equals the sum of the cross-sections above it. Move over the tree to see what each branch carries.</p>
+      <figure>
+        <canvas id="fig-pipe" width="960" height="460"></canvas>
+        <figcaption><output id="fig-pipe-out">Hover a branch</output></figcaption>
+      </figure>
+    </section>
+
+    <section class="essay">
+      <p class="eyebrow">Chaos to order</p>
+      <h2>Random points, random steps, always a tree</h2>
+      <p>The light is scattered at random. Every growth step has a small random wobble. And yet the result always reads as a tree, and as the right kind of tree. The order is not in the parts. It is in the rule. Replant, and the particulars change while the species stays the same.</p>
+      <figure>
+        <canvas id="fig-order" width="960" height="460"></canvas>
+        <figcaption><button class="ghost dark" id="fig-order-replay">Scatter again</button><output id="fig-order-out"></output></figcaption>
+      </figure>
+    </section>
+
+    <section class="essay species">
+      <p class="eyebrow">The shelf</p>
+      <h2>Five seeds, five habits</h2>
+      <div class="cards" id="cards"></div>
+    </section>
+
+    <section class="essay next">
+      <p class="eyebrow">Next</p>
+      <h2>Flowers that grow themselves</h2>
+      <p>The blossoms here are drawn. The next step is to grow them: each flower becomes a tiny neural network that learns to build itself from a single cell, petal by petal, and regrows if you tear one off. That turns the shelf into a nursery of learned forms rather than painted ones.</p>
+    </section>
+
+    <footer>
+      <p>Seedling · a growth simulation built with three.js. Branches and roots by space colonization, thickness by the pipe model, seasons by the calendar.</p>
+    </footer>
+  </main>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
