@@ -12,6 +12,7 @@ export interface Lab {
   trainFor(steps: number, onStep?: (n: number, loss: number) => void): Promise<void>
   save(): Promise<string>
   stats(): { steps: number; loss: number | null; ms: number }
+  grow(steps: number): void
 }
 
 /** The neural blossom lab: train, watch a flower grow from one cell, wound it, hang it on the tree. */
@@ -210,12 +211,11 @@ export async function initLab(onHang: (canvas: HTMLCanvasElement, sp: Species) =
       trainBtn.textContent = 'Train'
       for (let i = 0; i < steps; i++) {
         const t0 = performance.now()
-        const l = await nca.trainStep()
+        const l = nca.trainStepSync()
         lastMs = performance.now() - t0
         loaded = 'trained'
-        if (i % 10 === 0) { setStatus(); drawLoss() }
         onStep?.(nca.trainSteps, l)
-        await new Promise((r) => setTimeout(r, 0))
+        if (i % 25 === 24) { setStatus(); drawLoss(); await new Promise((r) => setTimeout(r, 0)) }
       }
       setStatus()
       drawLoss()
@@ -225,5 +225,18 @@ export async function initLab(onHang: (canvas: HTMLCanvasElement, sp: Species) =
       return r.text()
     },
     stats: () => ({ steps: nca.trainSteps, loss: nca.losses.length ? nca.losses[nca.losses.length - 1] : null, ms: lastMs }),
+    grow: (steps) => {
+      for (let i = 0; i < steps; i++) {
+        const n = nca.step(state)
+        state.dispose()
+        state = n
+        stepCount++
+      }
+      stateToImage(state, growImg)
+      growC.getContext('2d')!.putImageData(growImg, 0, 0)
+      hiddenToImage(state, hiddenImg)
+      hiddenC.getContext('2d')!.putImageData(hiddenImg, 0, 0)
+      stepEl.textContent = `step ${stepCount}`
+    },
   }
 }

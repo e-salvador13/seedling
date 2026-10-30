@@ -190,7 +190,9 @@ initLab((canvas, sp) => {
   else tree?.setNeuralFlower(canvas)
   if (tree && life) {
     const b = species.bloom
-    if (b && (day < b.start || day > b.end + 10)) { day = b.start + 8; scrub.value = String(day) }
+    if (b) { day = b.start + 10; scrub.value = String(day) }
+    playing = false
+    setPlayIcon()
   }
   document.getElementById('hero')!.scrollIntoView({ behavior: 'smooth' })
 }, species).then((lab) => { ;(window as any).seedling.lab = lab }).catch((e) => { console.error(e); document.getElementById('lab-status')!.textContent = 'This browser cannot run the neural lab (WebGL needed).' })

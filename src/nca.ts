@@ -134,6 +134,11 @@ export class NCA {
 
   /** One training step on a batch drawn from the sample pool. Returns the loss. */
   async trainStep(): Promise<number> {
+    return this.trainStepSync()
+  }
+
+  /** Same as trainStep but reads results synchronously, so it keeps running in a background tab where timers are throttled. */
+  trainStepSync(): number {
     if (!this.target) throw new Error('no target')
     const idx: number[] = []
     while (idx.length < BATCH) {
@@ -183,10 +188,10 @@ export class NCA {
     }
     this.opt.applyGradients(Object.keys(normed).map((name) => ({ name, tensor: normed[name] })))
     for (const k of Object.keys(normed)) normed[k].dispose()
-    const l = (await value.data())[0]
+    const l = (value.dataSync() as Float32Array)[0]
     value.dispose()
 
-    const out = (await final!.data()) as Float32Array
+    const out = final!.dataSync() as Float32Array
     for (let b = 0; b < BATCH; b++) this.pool[idx[b]] = out.slice(b * SIZE * SIZE * CH, (b + 1) * SIZE * SIZE * CH)
     final!.dispose()
     x0.dispose()

@@ -455,7 +455,7 @@ export class Tree3D {
               if (ni2 >= 9000) continue
               _qK.setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI / 2)
               _q.copy(_qF).multiply(_qK)
-              const ns = B.length * 2.4 * sc
+              const ns = B.length * 3.2 * sc
               _s.set(ns, ns, ns)
               _m.compose(_pos, _q, _s)
               this.neural.setMatrixAt(ni2++, _m)
